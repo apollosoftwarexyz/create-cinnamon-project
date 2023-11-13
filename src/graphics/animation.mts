@@ -1,8 +1,8 @@
 // Heavily modified from: https://github.com/bokub/chalk-animation/tree/master
 // MIT License
 
-import chalk from "chalk";
-import { Spinner } from "cli-spinners";
+import chalk from 'chalk';
+import { Spinner } from 'cli-spinners';
 
 abstract class Animator {
     // The timer used to trigger rendering the next frame.
@@ -130,7 +130,7 @@ abstract class Animator {
     protected render() {
         // Obtain the current frame and immediately fire all registered
         // callbacks.
-        let currentRawFrame = this.renderCurrentRawFrame();
+        const currentRawFrame = this.renderCurrentRawFrame();
         this.notifyFrame(currentRawFrame);
 
         // Then, if we're not in silent mode, print the frame to the console.
@@ -220,7 +220,7 @@ export class TextAnimator<T extends TextEffect<any>> extends Animator {
     }
 
     public constructor(text: string,
-                       effect: T,
+        effect: T,
                        speed: number = 1) {
         super(speed);
 
@@ -243,7 +243,7 @@ export class FramesAnimator extends Animator {
     public readonly interval: number;
 
     constructor(frames: string[],
-                interval: number,
+        interval: number,
                 speed: number = 1) {
         super(speed);
 
@@ -260,7 +260,7 @@ export class FramesAnimator extends Animator {
 export class SpinnerAnimator extends FramesAnimator {
 
     constructor(spinner: Spinner,
-                color?: [number, number, number],
+        color?: [number, number, number],
                 speed: number = 1) {
         if (color) spinner = SpinnerAnimator.recolorSpinner(spinner, color);
         super(spinner.frames, spinner.interval, speed);
@@ -270,7 +270,7 @@ export class SpinnerAnimator extends FramesAnimator {
         return {
             ...spinner,
             frames: spinner.frames.map(frame => chalk.rgb(...color)(frame))
-        }
+        };
     }
 
 }
@@ -288,7 +288,7 @@ interface SnekEffectOptions {
     backgroundColor: [number, number, number];
 }
 
-/// Simplified radar effect for performance (named snake/'snek'). :)
+// / Simplified radar effect for performance (named snake/'snek'). :)
 class SnekEffect extends TextEffect<SnekEffectOptions> {
     delay = 30;
 
@@ -305,12 +305,12 @@ class SnekEffect extends TextEffect<SnekEffectOptions> {
         const depth = Math.floor(Math.min(lengthFactor, lengthFactor * 0.2));
         const globalPos = frame % (text.length + depth);
 
-        let startColoredSubstring = globalPos - depth;
-        let endColoredSubstring = globalPos;
+        const startColoredSubstring = globalPos - depth;
+        const endColoredSubstring = globalPos;
 
         let coloredSubstring = text.substring(startColoredSubstring, endColoredSubstring);
         coloredSubstring = chalk.rgb(...this.options.highlightColor)(coloredSubstring);
-        let colorUncoloredText = chalk.rgb(...this.options.backgroundColor);
+        const colorUncoloredText = chalk.rgb(...this.options.backgroundColor);
 
         return [
             colorUncoloredText(text.substring(0, startColoredSubstring)),
@@ -321,14 +321,14 @@ class SnekEffect extends TextEffect<SnekEffectOptions> {
 }
 
 export function createTextAnimation<T>(text: string,
-                                       effect: TextEffect<T>,
-                                       speed: number = 1): TextAnimator<TextEffect<T>> {
+    effect: TextEffect<T>,
+    speed: number = 1): TextAnimator<TextEffect<T>> {
     return new TextAnimator(text, effect, speed);
 }
 
 export function createSpinnerAnimation(spinner: Spinner,
-                                       color?: [number, number, number],
-                                       speed: number = 1): SpinnerAnimator {
+    color?: [number, number, number],
+    speed: number = 1): SpinnerAnimator {
     return new SpinnerAnimator(spinner, color, speed);
 }
 
@@ -347,7 +347,7 @@ class AnimatorMultiplexer {
 
     public start() {
         for (let i = 0; i < this._animators.length; i++) {
-            let animator = this._animators[i];
+            const animator = this._animators[i];
 
             animator.start({ silent: true });
             animator.addOnFrameCallback(
@@ -369,11 +369,11 @@ class AnimatorMultiplexer {
     }
 
     public _triggerFrame() {
-        let frames = this._frames
+        const frames = this._frames
             .filter((animatorFrame) => !animatorFrame.animator.stopped)
             .map((animatorFrame) => animatorFrame.frame);
 
-        let frame = frames.join(' ') + '\n';
+        const frame = frames.join(' ') + '\n';
         this._onFrame.forEach(callback => callback(frame));
     }
 
@@ -412,6 +412,6 @@ export class SpinnerWithTextAnimation<T extends TextAnimator<TextEffect<any>>> e
 }
 
 export function createSpinnerTextAnimation<T>(spinner: SpinnerAnimator,
-                                              text: TextAnimator<TextEffect<T>>): SpinnerWithTextAnimation<TextAnimator<TextEffect<T>>> {
+    text: TextAnimator<TextEffect<T>>): SpinnerWithTextAnimation<TextAnimator<TextEffect<T>>> {
     return new SpinnerWithTextAnimation(spinner, text);
 }

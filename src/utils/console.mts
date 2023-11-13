@@ -1,15 +1,15 @@
-import chalk, {ChalkInstance} from "chalk";
-import inquirer, { CheckboxQuestion, DistinctQuestion } from "inquirer";
-import { Subject } from "rxjs";
+import chalk, { ChalkInstance } from 'chalk';
+import inquirer, { CheckboxQuestion, DistinctQuestion } from 'inquirer';
+import { Subject } from 'rxjs';
 
-import {CinnamonProject, CinnamonProjectFeatureType} from "../struct/project.mjs";
-import {FeatureNodeMetadata} from "../struct/generic/feature_tree.mjs";
-import spinners, {Spinner} from "cli-spinners";
+import { CinnamonProject, CinnamonProjectFeatureType } from '../struct/project.mjs';
+import { FeatureNodeMetadata } from '../struct/generic/feature_tree.mjs';
+import spinners, { Spinner } from 'cli-spinners';
 import {
     createSpinnerAnimation, createSpinnerTextAnimation,
     createTextAnimation,
     SpinnerWithTextAnimation, TextEffect
-} from "../graphics/animation.mjs";
+} from '../graphics/animation.mjs';
 
 /**
  * Ask the user to confirm something. Returns true if the user confirms, false
@@ -28,7 +28,7 @@ export const confirm = async (message: string): Promise<boolean> => {
     ]);
 
     return confirmed;
-}
+};
 
 /**
  * Skip a line in the console. Optionally, a message can be provided to be
@@ -38,14 +38,14 @@ export const confirm = async (message: string): Promise<boolean> => {
  * @param message Optionally, a message to wrap with the skip line.
  */
 export const skipLine = (message?: string): void =>
-    console.error("\n" + (message ? message : ""));
+    console.error('\n' + (message ? message : ''));
 
 /**
  * Skip status. This is used to indicate that a step in the program was skipped.
  * @param message A status message to print.
  */
 export const skip = (message: string| string[]): void =>
-    console.error(formatMessage(message, "skipped"));
+    console.error(formatMessage(message, 'skipped'));
 
 /**
  * Success status. This is used to indicate that a step in the program was
@@ -53,17 +53,17 @@ export const skip = (message: string| string[]): void =>
  * @param message A status message to print.
  */
 export const success = (message: string|string[]): void =>
-    console.error(formatMessage(message, "success"));
+    console.error(formatMessage(message, 'success'));
 
 /**
  * Error status. This is used to indicate that a step in the program failed.
  * @param message A status message to print.
  */
 export const error = (message: string|string[]): void =>
-    console.error(formatMessage(message, "error"));
+    console.error(formatMessage(message, 'error'));
 
 /** The types of message supported by {@link formatMessage}. */
-type FormatMessageKind = "info" | "skipped" | "success" | "error";
+type FormatMessageKind = 'info' | 'skipped' | 'success' | 'error';
 
 /**
  * Formats a message with a symbol and title and color-codes it. The message is
@@ -74,29 +74,29 @@ type FormatMessageKind = "info" | "skipped" | "success" | "error";
 export const formatMessage = (message: string|string[], kind: FormatMessageKind): string => {
     // If the message is an empty array, return an empty string.
     // No point in processing an empty message.
-    if (Array.isArray(message) && message.length == 0) return "";
+    if (Array.isArray(message) && message.length == 0) return '';
 
     let title: string, symbol: string, color: ChalkInstance, textColor: ChalkInstance | undefined;
 
     switch (kind) {
-        case "info":
-            title = "Info";
-            symbol = "ℹ️";
+        case 'info':
+            title = 'Info';
+            symbol = 'ℹ️';
             color = chalk.blueBright;
             break;
-        case "skipped":
-            title = "Skipped";
-            symbol = "⏭️";
+        case 'skipped':
+            title = 'Skipped';
+            symbol = '⏭️';
             color = chalk.whiteBright;
             break;
-        case "success":
-            title = "Success!";
-            symbol = "✅";
+        case 'success':
+            title = 'Success!';
+            symbol = '✅';
             color = chalk.greenBright;
             break;
-        case "error":
-            title = "Sorry!";
-            symbol = "❌";
+        case 'error':
+            title = 'Sorry!';
+            symbol = '❌';
             color = chalk.redBright;
             textColor = chalk.red;
             break;
@@ -106,20 +106,20 @@ export const formatMessage = (message: string|string[], kind: FormatMessageKind)
 
     /** Format a line of the message. */
     const formatLine = (line: string, withTitle: boolean = true) => {
-        let titleString = withTitle
+        const titleString = withTitle
             ? chalk.bold(color(`   ${symbol}  ${title}  —  `))
             : `      ${' '.repeat(title.length)}     `;
         return titleString + textColor!(line);
-    }
+    };
 
     // If the message is just a string, we can print it in one go.
-    if (typeof message === "string") {
+    if (typeof message === 'string') {
         return formatLine(message);
     }
 
     // Otherwise, fully format the first line, then format the remaining lines
     // without the symbol and title.
-    let formattedLines = [
+    const formattedLines = [
         // Add a blank line before the message for readability.
         '',
         // We asserted above that if the message is an array, it is not empty.
@@ -129,8 +129,8 @@ export const formatMessage = (message: string|string[], kind: FormatMessageKind)
     ];
 
     // Return the formatted lines joined by newlines.
-    return formattedLines.join("\n");
-}
+    return formattedLines.join('\n');
+};
 
 /**
  * Prompts the user to select features for the specified
@@ -143,7 +143,7 @@ export async function askUserForProjectFeatures(project: CinnamonProject) : Prom
     const currentQuestions = new Subject<DistinctQuestion>();
     const prompt = inquirer.prompt(currentQuestions);
 
-    let questionForFeatures = (message: string, features: FeatureNodeMetadata<CinnamonProjectFeatureType>[]): CheckboxQuestion => ({
+    const questionForFeatures = (message: string, features: FeatureNodeMetadata<CinnamonProjectFeatureType>[]): CheckboxQuestion => ({
         type: 'checkbox',
         name: 'feature',
         loop: true,
@@ -162,7 +162,7 @@ export async function askUserForProjectFeatures(project: CinnamonProject) : Prom
             // Enable all of the selected features.
             project.features.enableAll(answer.answer);
 
-            let features = project.features.getFeaturesForLevel(++level);
+            const features = project.features.getFeaturesForLevel(++level);
 
             // If there are no more features at this level, we're done.
             if (features.length === 0) return currentQuestions.complete();
@@ -172,7 +172,7 @@ export async function askUserForProjectFeatures(project: CinnamonProject) : Prom
     });
 
     // Ask the initial question.
-    let features = project.features.getFeaturesForLevel(level);
+    const features = project.features.getFeaturesForLevel(level);
     currentQuestions.next(questionForFeatures('Which features would you like to include in your project?', features));
     await prompt;
 }
@@ -214,8 +214,8 @@ export class AnimatedBottomBar {
     }
 
     constructor(text: string) {
-        let spinnerAnimator = createSpinnerAnimation(this.spinner, this.color);
-        let textAnimator = createTextAnimation(text, TextEffect.radar({
+        const spinnerAnimator = createSpinnerAnimation(this.spinner, this.color);
+        const textAnimator = createTextAnimation(text, TextEffect.radar({
             highlightColor: this.color
         }));
 
@@ -245,15 +245,15 @@ export class AnimatedBottomBar {
     public close(clear: boolean = true) {
         if (clear) {
             this.loading = false;
-            this.text = "";
+            this.text = '';
 
-            // @ts-ignore
+            // @ts-expect-error - protected method (but recommended for use inquirer dev?)
             this.bottomBar.clean();
         }
 
         this._stopAnimation();
 
-        // @ts-ignore
+        // @ts-expect-error - protected method (but recommended for use by inquirer dev?)
         this.bottomBar.close();
         console.log('');
     }
@@ -264,13 +264,13 @@ export class AnimatedBottomBar {
         this.close(false);
     }
 
-    public info(message: string|string[]) { this.log.write(`${formatMessage(message, "info")}\n`); }
-    public skip(message: string|string[]) { this.log.write(`${formatMessage(message, "skipped")}\n`); }
-    public success(message: string|string[]) { this.complete(formatMessage(message, "success")); }
-    public error(message: string|string[]) { this.complete(formatMessage(message, "error")); }
+    public info(message: string|string[]) { this.log.write(`${formatMessage(message, 'info')}\n`); }
+    public skip(message: string|string[]) { this.log.write(`${formatMessage(message, 'skipped')}\n`); }
+    public success(message: string|string[]) { this.complete(formatMessage(message, 'success')); }
+    public error(message: string|string[]) { this.complete(formatMessage(message, 'error')); }
 
     public skipLine() {
-        this.log.write("\n");
+        this.log.write('\n');
     }
 
 }

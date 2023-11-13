@@ -2,8 +2,8 @@ import {
     CinnamonProjectFeature,
     CinnamonProjectFeatureForest, CinnamonProjectFeatureType,
     createCinnamonFeatureForest
-} from "../src/struct/project.mjs";
-import {forest, node} from "../src/struct/generic/feature_tree.mjs";
+} from '../src/struct/project.mjs';
+import { forest, node } from '../src/struct/generic/feature_tree.mjs';
 
 describe('test feature tree', () => {
     const cinnamonFeatureForest = createCinnamonFeatureForest();
@@ -94,7 +94,7 @@ const createDodgyCinnamonFeatureForest = (): CinnamonProjectFeatureForest => {
         node(CinnamonProjectFeature.ASL_ERRORS),
         node(CinnamonProjectFeature.WEBSERVER_SETTINGS_PLUGIN),
     ]);
-}
+};
 
 const createOtherDodgyCinnamonFeatureForest = (): CinnamonProjectFeatureForest => {
     return forest<CinnamonProjectFeatureType>([
@@ -112,7 +112,7 @@ const createOtherDodgyCinnamonFeatureForest = (): CinnamonProjectFeatureForest =
         node(CinnamonProjectFeature.ASL_ERRORS),
         node(CinnamonProjectFeature.WEBSERVER_SETTINGS_PLUGIN),
     ]);
-}
+};
 
 describe('test dodgy feature trees', () => {
 

@@ -1,11 +1,11 @@
-import { feature, FeatureForest, FeatureNodeMetadata, forest, node } from "./generic/feature_tree.mjs";
-import { IntendedDirectoryResolution } from "../utils/heuristics.mjs";
+import { feature, FeatureForest, FeatureNodeMetadata, forest, node } from './generic/feature_tree.mjs';
+import { IntendedDirectoryResolution } from '../utils/heuristics.mjs';
 
-import Path from "node:path";
-import { extract, ReadEntry } from "tar";
-import { promisify } from "util";
-import FileSystem from "node:fs";
-import {yarn, YarnOptions} from "../utils/command.mjs";
+import Path from 'node:path';
+import { extract, ReadEntry } from 'tar';
+import { promisify } from 'util';
+import FileSystem from 'node:fs';
+import { yarn, YarnOptions } from '../utils/command.mjs';
 
 export enum CinnamonProjectFeatureType {
     VALIDATOR = 'VALIDATOR',
@@ -29,32 +29,32 @@ export const CinnamonProjectFeature: Record<CinnamonProjectFeatureType, FeatureN
     VALIDATOR: feature<CinnamonProjectFeatureType>(
         CinnamonProjectFeatureType.VALIDATOR,
         'Cinnamon Validator',
-        "Provides data validation with human-readable error messages."
+        'Provides data validation with human-readable error messages.'
     ),
     DATABASE: feature<CinnamonProjectFeatureType>(
         CinnamonProjectFeatureType.DATABASE,
         'Cinnamon Database (powered by MikroORM)',
-        "Connect to a database and manage data with MikroORM."
+        'Connect to a database and manage data with MikroORM.'
     ),
     AUTHENTICATION: feature<CinnamonProjectFeatureType>(
         CinnamonProjectFeatureType.AUTHENTICATION,
         'Authentication',
-        "Manage user accounts and authenticate users."
+        'Manage user accounts and authenticate users.'
     ),
     PUSH_TOKENS: feature<CinnamonProjectFeatureType>(
         CinnamonProjectFeatureType.PUSH_TOKENS,
         'Push Tokens',
-        "Support for associating push tokens for mobile devices with a user session."
+        'Support for associating push tokens for mobile devices with a user session.'
     ),
     ASSET: feature<CinnamonProjectFeatureType>(
         CinnamonProjectFeatureType.ASSET,
         'Assets',
-        "Support for storing assets (e.g., profile avatars/pictures) for users."
+        'Support for storing assets (e.g., profile avatars/pictures) for users.'
     ),
     AVATAR: feature<CinnamonProjectFeatureType>(
         CinnamonProjectFeatureType.AVATAR,
         'Avatars',
-        "Support for storing profile pictures for users."
+        'Support for storing profile pictures for users.'
     ),
     ASL_PROTOCOL: feature<CinnamonProjectFeatureType>(
         CinnamonProjectFeatureType.ASL_PROTOCOL,
@@ -64,12 +64,12 @@ export const CinnamonProjectFeature: Record<CinnamonProjectFeatureType, FeatureN
     ASL_ERRORS: feature<CinnamonProjectFeatureType>(
         CinnamonProjectFeatureType.ASL_ERRORS,
         'ASL Errors',
-        "Adds project/domain-specific error codes and handling to your project. Useful for API projects."
+        'Adds project/domain-specific error codes and handling to your project. Useful for API projects.'
     ),
     WEBSERVER_SETTINGS_PLUGIN: feature<CinnamonProjectFeatureType>(
         CinnamonProjectFeatureType.WEBSERVER_SETTINGS_PLUGIN,
         'Webserver Settings Plugin',
-        "Adds a plugin to your project that allows configuring the proxy mode of the webserver. Useful as a starting point for your own plugins."
+        'Adds a plugin to your project that allows configuring the proxy mode of the webserver. Useful as a starting point for your own plugins.'
     ),
 };
 
@@ -89,7 +89,7 @@ export const createCinnamonFeatureForest = (): CinnamonProjectFeatureForest => {
         node(CinnamonProjectFeature.ASL_ERRORS),
         node(CinnamonProjectFeature.WEBSERVER_SETTINGS_PLUGIN),
     ]);
-}
+};
 
 /**
  * Represents a Cinnamon project being created.
@@ -131,8 +131,8 @@ export class CinnamonProject {
         this.port = port;
     }
 
-    public async extractTemplateToTemporaryDirectory(templatesDirectory: string, templateName: "default" = "default") {
-        let files: string[] = [];
+    public async extractTemplateToTemporaryDirectory(templatesDirectory: string, templateName: 'default' = 'default') {
+        const files: string[] = [];
 
         await extract({
             cwd: this.directory.temporaryPath,
@@ -168,17 +168,17 @@ export class CinnamonProject {
         const unneededFiles: string[] = [];
 
         // Iterate over each file, and remove blocks that are not enabled.
-        for (let rawFilePath of files) {
-            let file = Path.join(this.directory.temporaryPath, rawFilePath);
+        for (const rawFilePath of files) {
+            const file = Path.join(this.directory.temporaryPath, rawFilePath);
 
             // Read the file.
-            let contents = await promisify(FileSystem.readFile)(file, { encoding: 'utf-8' });
+            const contents = await promisify(FileSystem.readFile)(file, { encoding: 'utf-8' });
 
             // Check the first line of the file for an include guard.
-            let firstLine = contents.split('\n')[0];
-            if (firstLine.startsWith("//IF:")) {
+            const firstLine = contents.split('\n')[0];
+            if (firstLine.startsWith('//IF:')) {
                 // Get the feature ID.
-                let featureIds = firstLine.substring(5).split(',');
+                const featureIds = firstLine.substring(5).split(',');
 
                 // If any of the feature IDs are not enabled, skip the file.
                 if (featureIds.some(featureId => !this.features.get(getCinnamonFeatureTypeById(featureId)))) {
@@ -188,7 +188,7 @@ export class CinnamonProject {
             }
 
             // Find all of the create-cinnamon-project markup in the file.
-            let matches = contents.matchAll(/\/\/\[(BEGIN|END):(!?[A-Z][A-Z_]*)]/g);
+            const matches = contents.matchAll(/\/\/\[(BEGIN|END):(!?[A-Z][A-Z_]*)]/g);
 
             function swallowBefore(position: number) {
                 if (position <= 0) return position;
@@ -204,15 +204,15 @@ export class CinnamonProject {
 
             // Iterate over each match.
             let deletions: [number, number][] = [];
-            for (let match of matches) {
-                let [_, type, featureId] = match;
-                let feature = getCinnamonFeatureTypeById(
-                    featureId.startsWith("!") ? featureId.substring(1) : featureId
+            for (const match of matches) {
+                const [_, type, featureId] = match;
+                const feature = getCinnamonFeatureTypeById(
+                    featureId.startsWith('!') ? featureId.substring(1) : featureId
                 );
 
                 // If this is a BEGIN tag, and the feature is not enabled, skip
                 // the block.
-                if (type === "BEGIN" && !featureId.startsWith("!")) {
+                if (type === 'BEGIN' && !featureId.startsWith('!')) {
                     let beforeStartTag = match.index!;
 
                     // Find the START tag.
@@ -224,7 +224,7 @@ export class CinnamonProject {
                     if (endTag === -1) throw new Error(`(Bad template) Could not find END tag for feature block: ${feature}.`);
 
                     // Find the next newline after the END tag.
-                    let afterEndTag = contents.indexOf("\n", endTag);
+                    const afterEndTag = contents.indexOf('\n', endTag);
                     if (afterEndTag === -1) throw new Error(`(Bad template) Could not find EOL following end tag: ${feature}, ${rawFilePath}.`);
 
                     if (!this.features.get(feature)) {
@@ -243,20 +243,20 @@ export class CinnamonProject {
                 }
 
                 // Handle the BEGIN-NOT and END-NOT tags.
-                if (type === "BEGIN" && featureId.startsWith("!")) {
+                if (type === 'BEGIN' && featureId.startsWith('!')) {
                     let beforeStartTag = match.index!;
 
                     // Find the START tag.
                     let startTag = contents.indexOf(`\n`, beforeStartTag);
-                    if (startTag === -1) throw new Error(`(Bad template) Could not find START tag for feature block: !${feature}.`)
+                    if (startTag === -1) throw new Error(`(Bad template) Could not find START tag for feature block: !${feature}.`);
 
                     // Find the END tag.
                     let endTag = contents.indexOf(`//[END:${featureId}]`, beforeStartTag);
-                    if (endTag === -1) throw new Error(`(Bad template) Could not find END tag for feature block: !${feature}.`)
+                    if (endTag === -1) throw new Error(`(Bad template) Could not find END tag for feature block: !${feature}.`);
 
                     // Find the next newline after the END tag.
-                    let afterEndTag = contents.indexOf("\n", endTag);
-                    if (afterEndTag === -1) throw new Error(`(Bad template) Could not find EOL following end tag: !${feature}, ${rawFilePath}.`)
+                    const afterEndTag = contents.indexOf('\n', endTag);
+                    if (afterEndTag === -1) throw new Error(`(Bad template) Could not find EOL following end tag: !${feature}, ${rawFilePath}.`);
 
                     if (this.features.get(feature)) {
                         // Remove the block.
@@ -277,8 +277,8 @@ export class CinnamonProject {
             // Merge deletions that overlap.
             deletions = deletions.sort((a, b) => a[0] - b[0]);
             for (let i = 0; i < deletions.length - 1; i++) {
-                let [start1, end1] = deletions[i];
-                let [start2, end2] = deletions[i + 1];
+                const [start1, end1] = deletions[i];
+                const [start2, end2] = deletions[i + 1];
 
                 if (start2 <= end1) {
                     deletions[i] = [start1, Math.max(end1, end2)];
@@ -288,10 +288,10 @@ export class CinnamonProject {
             }
 
             // Now build the new contents.
-            let newContents = "";
+            let newContents = '';
             let lastEnd = 0;
 
-            for (let [start, end] of deletions) {
+            for (const [start, end] of deletions) {
                 newContents += contents.substring(lastEnd, start);
                 lastEnd = end;
             }
@@ -315,7 +315,7 @@ export class CinnamonProject {
         }
 
         // Delete all of the unneeded files.
-        for (let file of unneededFiles) {
+        for (const file of unneededFiles) {
             await promisify(FileSystem.unlink)(file);
         }
     }
@@ -351,21 +351,21 @@ export class CinnamonProject {
     }
 
     public async* migrateDatabase() {
-        yield "Generating initial migration...";
+        yield 'Generating initial migration...';
 
         await yarn({
             args: ['db:migrate:create'],
             cwd: this.directory.path,
         });
 
-        yield "Applying migrations...";
+        yield 'Applying migrations...';
 
         await yarn({
             args: ['db:migrate'],
             cwd: this.directory.path,
         });
 
-        yield "Database is ready!";
+        yield 'Database is ready!';
     }
 
     public async removeTemporaryDirectory() {
@@ -376,11 +376,11 @@ export class CinnamonProject {
     }
 
     private static async recursiveCopy(source: string, destination: string) {
-        let children = await promisify(FileSystem.readdir)(source);
+        const children = await promisify(FileSystem.readdir)(source);
 
-        for (let child of children) {
-            let sourceChild = Path.join(source, child);
-            let destinationChild = Path.join(destination, child);
+        for (const child of children) {
+            const sourceChild = Path.join(source, child);
+            const destinationChild = Path.join(destination, child);
 
             if ((await promisify(FileSystem.stat)(sourceChild)).isDirectory()) {
                 await promisify(FileSystem.mkdir)(destinationChild);

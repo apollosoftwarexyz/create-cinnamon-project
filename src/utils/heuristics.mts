@@ -4,7 +4,7 @@ import Path from 'node:path';
 
 import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
-import { Arguments } from "./arguments.mjs";
+import { Arguments } from './arguments.mjs';
 
 /**
  * Represents a directory that the user intends to create a project in.
@@ -12,6 +12,7 @@ import { Arguments } from "./arguments.mjs";
  * provide additional information about the directory to the user.
  */
 export class IntendedDirectoryResolution {
+
     /**
      * The path to a temporary directory that can be used to prepare this
      * directory for a project.
@@ -42,7 +43,7 @@ export class IntendedDirectoryResolution {
      * @param message The message to include in the confirmation message.
      */
     public confirmationMessage(message: string) {
-        let note = this.note ? ` — ${this.note}` : "";
+        const note = this.note ? ` — ${this.note}` : '';
         return `${message} (${this.path})${note}`;
     }
 
@@ -85,18 +86,17 @@ export class IntendedDirectoryResolution {
 
         let temporaryDirectory;
 
-        // If the temporary directory must be created inside the current
-        // directory, do so.
         if (inDir) {
-            temporaryDirectory = Path.join(this.path, ".cinnamon-temporary");
+            // If the temporary directory must be created inside the current
+            // directory, do so.
+            temporaryDirectory = Path.join(this.path, '.cinnamon-temporary');
             await promisify(FileSystem.mkdir)(temporaryDirectory, {
                 recursive: true
             });
-        }
-        // Otherwise, create it in the system temporary directory.
-        else {
+        } else {
+            // Otherwise, create it in the system temporary directory.
             temporaryDirectory = await promisify(FileSystem.mkdtemp)(
-                Path.join(OperatingSystem.tmpdir(), "cinnamon-")
+                Path.join(OperatingSystem.tmpdir(), 'cinnamon-')
             );
         }
 
@@ -131,7 +131,7 @@ export async function resolveIntendedDirectory(args: Arguments): Promise<Intende
 
     const relativeDir = Path.resolve(args.positional[0]);
     if (!(await promisify(FileSystem.exists)(relativeDir))) {
-        return new IntendedDirectoryResolution(relativeDir, "it will be created.");
+        return new IntendedDirectoryResolution(relativeDir, 'it will be created.');
     }
 
     return new IntendedDirectoryResolution(relativeDir);
@@ -158,12 +158,12 @@ export async function isProbablyUndesirableDirectory(path: string): Promise<stri
 
     // Don't make a project in the user's home directory.
     if (absolutePath == OperatingSystem.homedir()) {
-        return "you are in your home directory.";
+        return 'you are in your home directory.';
     }
 
     // Don't make a project in the root directory.
-    if (absolutePath == "/") {
-        return "you are in your system root directory.";
+    if (absolutePath == '/') {
+        return 'you are in your system root directory.';
     }
 
     // If the user does not have permission to write to the directory, don't
@@ -171,36 +171,36 @@ export async function isProbablyUndesirableDirectory(path: string): Promise<stri
     try {
         await promisify(FileSystem.access)(absolutePath, FileSystem.constants.W_OK);
     } catch (ex) {
-        return "you do not have permission to write to the directory.";
+        return 'you do not have permission to write to the directory.';
     }
 
     // Don't make a project in a directory that already has a package.json file.
-    if (await promisify(FileSystem.exists)(Path.join(absolutePath, "package.json"))) {
-        return "the directory already has a package.json file.";
+    if (await promisify(FileSystem.exists)(Path.join(absolutePath, 'package.json'))) {
+        return 'the directory already has a package.json file.';
     }
 
     // Don't make a project in a directory that already has a cinnamon.toml file.
     // TODO: maybe we should allow this, but read values from the cinnamon.toml
     //       file and use them as defaults for the project? (assuming that we
     //       can detect that there is not an existing project in the directory)
-    if (await promisify(FileSystem.exists)(Path.join(absolutePath, "cinnamon.toml"))) {
-        return "the directory already has a cinnamon.toml file.";
+    if (await promisify(FileSystem.exists)(Path.join(absolutePath, 'cinnamon.toml'))) {
+        return 'the directory already has a cinnamon.toml file.';
     }
 
     // Don't make a project in a directory that already has a node_modules
     // directory.
-    if (await promisify(FileSystem.exists)(Path.join(absolutePath, "node_modules"))) {
-        return "the directory already has a node_modules directory.";
+    if (await promisify(FileSystem.exists)(Path.join(absolutePath, 'node_modules'))) {
+        return 'the directory already has a node_modules directory.';
     }
 
     // Don't make a project in a directory that already has a yarn.lock or
     // package-lock.json file.
-    if (await promisify(FileSystem.exists)(Path.join(absolutePath, "yarn.lock"))) {
-        return "the directory already has a yarn.lock file.";
+    if (await promisify(FileSystem.exists)(Path.join(absolutePath, 'yarn.lock'))) {
+        return 'the directory already has a yarn.lock file.';
     }
 
-    if (await promisify(FileSystem.exists)(Path.join(absolutePath, "package-lock.json"))) {
-        return "the directory already has a package-lock.json file.";
+    if (await promisify(FileSystem.exists)(Path.join(absolutePath, 'package-lock.json'))) {
+        return 'the directory already has a package-lock.json file.';
     }
 
     // Don't make a project in a directory that contains more than 3 folders or
@@ -213,7 +213,7 @@ export async function isProbablyUndesirableDirectory(path: string): Promise<stri
         // We can assume that if the directory contains more than 3 folders or
         // 5 files, it is probably being used for something else, rather than
         // having been prepared for a Cinnamon project.
-        return "the directory seems to be used for something else.";
+        return 'the directory seems to be used for something else.';
     }
 }
 
@@ -225,6 +225,15 @@ export async function isProbablyUndesirableDirectory(path: string): Promise<stri
 export function locateRelativeProjectPath(path: string): string {
     // This file is in src/utils, so we need to go up two directories to get to
     // the root directory.
-    let containingDir = Path.dirname(fileURLToPath(import.meta.url));
-    return Path.join(containingDir, "..", "..", path);
+    const containingDir = Path.dirname(fileURLToPath(import.meta.url));
+    return Path.join(containingDir, '..', '..', path);
+}
+
+/**
+ * Makes a guess at a good project author name. Currently just uses the user's
+ * system username.
+ */
+// TODO: consider using git config if present.
+export function getDefaultProjectAuthorName(): string {
+    return OperatingSystem.userInfo().username;
 }

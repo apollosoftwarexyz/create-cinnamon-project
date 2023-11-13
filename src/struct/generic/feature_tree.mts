@@ -63,7 +63,7 @@ export class FeatureForest<T extends FeatureNodeIdentifier> {
     }
 
     private findNodeInTopology(id: T): FeatureNode<T> | undefined {
-        let desired = this._topology.find(node => node.metadata.id === id);
+        const desired = this._topology.find(node => node.metadata.id === id);
         if (desired) return desired;
 
         for (const node of this._topology) {
@@ -73,7 +73,7 @@ export class FeatureForest<T extends FeatureNodeIdentifier> {
     }
 
     private _computeFeaturesForLevel(level: number,
-                                     nodes: FeatureNode<T>[],
+        nodes: FeatureNode<T>[],
                                      currentLevel: number = 0): FeatureNodeMetadata<T>[] {
         // If the current level is the level we're looking for, return the
         // metadata for all features at this level.
@@ -181,7 +181,7 @@ export class FeatureForest<T extends FeatureNodeIdentifier> {
     public getAllEnabled(): FeatureNodeMetadata<T>[] {
         // Start with the top level features that are enabled.
         let search = this._topology.filter(node => node.enabled);
-        let enabled: FeatureNodeMetadata<T>[] = [];
+        const enabled: FeatureNodeMetadata<T>[] = [];
 
         while (search.length > 0) {
             // Add all enabled features from the search list to the list.
@@ -257,8 +257,8 @@ export function feature<T extends FeatureNodeIdentifier>(id: T, name: string, de
 }
 
 export function node<T extends FeatureNodeIdentifier>(metadata: FeatureNodeMetadata<T>,
-                        children?: FeatureNode<T>[],
-                        options?: {
+    children?: FeatureNode<T>[],
+    options?: {
                             enabled?: boolean,
                         }): FeatureNode<T> {
     return new FeatureNode<T>(

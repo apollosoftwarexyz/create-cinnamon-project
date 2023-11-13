@@ -5,6 +5,7 @@
  * more convenient format by dividing them into positional arguments and flags.
  */
 export class Arguments {
+
     /**
      * The total number of arguments and flags passed to the program.
      */
@@ -63,7 +64,7 @@ export class Arguments {
      * @param args The raw arguments passed to the program.
      */
     constructor(private readonly args: string[]) {
-        this.positional = args.filter(arg => !arg.startsWith("-"));
-        this.flags = args.filter(arg => arg.startsWith("-"));
+        this.positional = args.filter(arg => !arg.startsWith('-'));
+        this.flags = args.filter(arg => arg.startsWith('-'));
     }
 }
