@@ -1,6 +1,6 @@
 {
   "name": "create-cinnamon-project",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A tool to automatically create Cinnamon projects.",
   "main": "./dist/main.mjs",
   "module": "./dist/main.mjs",
