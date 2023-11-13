@@ -1,0 +1,16 @@
+{
+  "include": [
+    "src/**/*"
+  ],
+  "compilerOptions": {
+    "strict": true,
+    "lib": [ "ESNext" ],
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "emitDecoratorMetadata": true
+  }
+}
