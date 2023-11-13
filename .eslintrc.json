@@ -33,7 +33,8 @@
         "@typescript-eslint/no-unused-vars": [
             "error",
             {
-                "varsIgnorePattern": "^_" // ignore unused variables starting with _
+                "varsIgnorePattern": "^_",      // ignore unused variables starting with _
+                "argsIgnorePattern": "(^_|ctx)" // ignore unused variables starting with _, or the request context.
             }
         ],
         "linebreak-style": [
