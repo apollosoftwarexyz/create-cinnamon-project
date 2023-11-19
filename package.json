@@ -1,6 +1,6 @@
 {
   "name": "create-cinnamon-project",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A tool to automatically create Cinnamon projects.",
   "main": "./dist/main.mjs",
   "module": "./dist/main.mjs",
@@ -16,6 +16,7 @@
     "prepare": "yarn build && chmod +x ./bin/create-cinnamon-project",
     "publish": "yarn npm publish --access public",
     "template:create": "mkdirp ./template",
+    "template:compare": "node --loader ts-node/esm ./tools/compare.mts",
     "template:pack": "FORCE_COLOR=1 node tools/ask.mjs \"Template name\" --snake-case | xargs -I {} tar -czf ./templates/{}.tar.gz -C ./template .",
     "lint": "eslint .",
     "lint:fix": "eslint --fix ."
@@ -33,9 +34,9 @@
     "@types/inquirer": "^9.0.7",
     "@types/jest": "^29.5.8",
     "@types/tar": "^6",
-    "@typescript-eslint/eslint-plugin": "^6.10.0",
-    "@typescript-eslint/parser": "^6.10.0",
-    "eslint": "^8.53.0",
+    "@typescript-eslint/eslint-plugin": "^6.11.0",
+    "@typescript-eslint/parser": "^6.11.0",
+    "eslint": "^8.54.0",
     "eslint-plugin-import-quotes": "^0.0.1",
     "jest": "^29.7.0",
     "mkdirp": "^3.0.1",
