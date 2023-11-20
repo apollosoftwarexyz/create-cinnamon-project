@@ -16,7 +16,7 @@
     "prepare": "yarn build && chmod +x ./bin/create-cinnamon-project",
     "publish": "yarn npm publish --access public",
     "template:create": "mkdirp ./template",
-    "template:compare": "node --loader ts-node/esm ./tools/compare.mts",
+    "template:compare": "node --loader ts-node/esm ./tools/compare.mts ./templates/default.tar.gz ./template",
     "template:pack": "FORCE_COLOR=1 node tools/ask.mjs \"Template name\" --snake-case | xargs -I {} tar -czf ./templates/{}.tar.gz -C ./template .",
     "lint": "eslint .",
     "lint:fix": "eslint --fix ."
