@@ -172,7 +172,7 @@ export class CinnamonProject {
             const file = Path.join(this.directory.temporaryPath, rawFilePath);
 
             // Read the file.
-            const contents = await promisify(FileSystem.readFile)(file, { encoding: 'utf-8' });
+            let contents = await promisify(FileSystem.readFile)(file, { encoding: 'utf-8' });
 
             // Check the first line of the file for an include guard.
             const firstLine = contents.split('\n')[0];
@@ -185,6 +185,10 @@ export class CinnamonProject {
                     unneededFiles.push(file);
                     continue;
                 }
+
+                // Remove the include guard (the first line and the newline
+                // after it).
+                contents = contents.substring(firstLine.length + 1);
             }
 
             // Find all of the create-cinnamon-project markup in the file.
