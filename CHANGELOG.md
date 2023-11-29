@@ -1,6 +1,7 @@
 # v0.1.0
 - Updated for Cinnamon v0.2.0
 - Bug fixes and improvements
+- Set default `lib`, `target`, `module` to `ES2022`
 
 # v0.0.3
 - Bug fixes, bumped dependencies and added script to diff archive files
